@@ -75,4 +75,68 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_PANTRY);
         onCreate(db);
     }
+    // CREATE
+    public long addPantryItem(PantryItem item) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COL_NAME, item.getName());
+        values.put(COL_QUANTITY, item.getQuantity());
+        values.put(COL_UNIT, item.getUnit());
+        values.put(COL_EXPIRY, item.getExpiryDate());
+        return db.insert(TABLE_PANTRY, null, values);
+    }
+
+    // READ (all)
+    public List<PantryItem> getAllPantryItems() {
+        List<PantryItem> items = new ArrayList<>();
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.query(TABLE_PANTRY, null, null, null, null, null,
+                COL_NAME + " COLLATE NOCASE ASC");
+        while (cursor.moveToNext()) {
+            items.add(cursorToItem(cursor));
+        }
+        cursor.close();
+        return items;
+    }
+
+    // READ (one)
+    public PantryItem getPantryItem(long id) {
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.query(TABLE_PANTRY, null, COL_ID + "=?",
+                new String[]{String.valueOf(id)}, null, null, null);
+        PantryItem item = null;
+        if (cursor.moveToFirst()) {
+            item = cursorToItem(cursor);
+        }
+        cursor.close();
+        return item;
+    }
+
+    // UPDATE
+    public int updatePantryItem(PantryItem item) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COL_NAME, item.getName());
+        values.put(COL_QUANTITY, item.getQuantity());
+        values.put(COL_UNIT, item.getUnit());
+        values.put(COL_EXPIRY, item.getExpiryDate());
+        return db.update(TABLE_PANTRY, values, COL_ID + "=?",
+                new String[]{String.valueOf(item.getId())});
+    }
+
+    // DELETE
+    public int deletePantryItem(long id) {
+        SQLiteDatabase db = getWritableDatabase();
+        return db.delete(TABLE_PANTRY, COL_ID + "=?", new String[]{String.valueOf(id)});
+    }
+
+    // Converts the current cursor row into a PantryItem object
+    private PantryItem cursorToItem(Cursor cursor) {
+        return new PantryItem(
+                cursor.getLong(cursor.getColumnIndexOrThrow(COL_ID)),
+                cursor.getString(cursor.getColumnIndexOrThrow(COL_NAME)),
+                cursor.getDouble(cursor.getColumnIndexOrThrow(COL_QUANTITY)),
+                cursor.getString(cursor.getColumnIndexOrThrow(COL_UNIT)),
+                cursor.getString(cursor.getColumnIndexOrThrow(COL_EXPIRY)));
+    }
 }

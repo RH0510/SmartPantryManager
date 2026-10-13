@@ -29,7 +29,7 @@ public class PantryItem {
     public void setName(String name){
         this.name = name;
     }
-    public String getQuantity(){
+    public double getQuantity(){
         return quantity;
     }
     public void setQuantity(double quantity){

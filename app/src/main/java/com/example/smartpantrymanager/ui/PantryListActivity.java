@@ -7,6 +7,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.smartpantrymanager.R;
+import com.example.smartpantrymanager.database.DatabaseHelper;
+import com.example.smartpantrymanager.model.PantryItem;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class PantryListActivity extends AppCompatActivity {
@@ -24,5 +26,7 @@ public class PantryListActivity extends AppCompatActivity {
 
         // The adapter and database are connected in later steps
         recyclerPantry.setLayoutManager(new LinearLayoutManager(this));
+
+
     }
 }
