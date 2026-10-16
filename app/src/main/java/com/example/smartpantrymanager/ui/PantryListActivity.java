@@ -1,5 +1,6 @@
 package com.example.smartpantrymanager.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
@@ -36,15 +37,18 @@ public class PantryListActivity extends AppCompatActivity {
 
         databaseHelper = new DatabaseHelper(this);
 
-        adapter = new PantryAdapter(new ArrayList<>(), item ->{
-
+        adapter = new PantryAdapter(new ArrayList<>(), item -> {
+            // Row click handling is added in commit 8 (edit and delete)
         });
 
-        // The adapter and database are connected in later steps
         recyclerPantry.setLayoutManager(new LinearLayoutManager(this));
         recyclerPantry.setAdapter(adapter);
 
+        // Opens the Add Ingredient screen when + is tapped
+        fabAddItem.setOnClickListener(v ->
+                startActivity(new Intent(PantryListActivity.this, AddEditItemActivity.class)));
     }
+
     // Runs every time the screen becomes visible, so the list is refreshed
     // after returning from the Add/Edit screen
     @Override
@@ -53,11 +57,12 @@ public class PantryListActivity extends AppCompatActivity {
         loadPantry();
     }
 
-    private void loadPantry(){
+    private void loadPantry() {
         List<PantryItem> items = databaseHelper.getAllPantryItems();
+
         adapter.setItems(items);
 
-        if (items.isEmpty()){
+        if (items.isEmpty()) {
             textEmptyPantry.setVisibility(View.VISIBLE);
             recyclerPantry.setVisibility(View.GONE);
         } else {
