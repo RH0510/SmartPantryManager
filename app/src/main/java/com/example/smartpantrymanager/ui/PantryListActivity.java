@@ -37,8 +37,11 @@ public class PantryListActivity extends AppCompatActivity {
 
         databaseHelper = new DatabaseHelper(this);
 
+        // Tapping a row opens the same form in edit mode, passing the item's id
         adapter = new PantryAdapter(new ArrayList<>(), item -> {
-            // Row click handling is added in commit 8 (edit and delete)
+            Intent intent = new Intent(PantryListActivity.this, AddEditItemActivity.class);
+            intent.putExtra(AddEditItemActivity.EXTRA_ITEM_ID, item.getId());
+            startActivity(intent);
         });
 
         recyclerPantry.setLayoutManager(new LinearLayoutManager(this));
@@ -59,7 +62,6 @@ public class PantryListActivity extends AppCompatActivity {
 
     private void loadPantry() {
         List<PantryItem> items = databaseHelper.getAllPantryItems();
-
         adapter.setItems(items);
 
         if (items.isEmpty()) {

@@ -2,12 +2,14 @@ package com.example.smartpantrymanager.ui;
 
 import android.app.DatePickerDialog;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.smartpantrymanager.R;
@@ -18,7 +20,11 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.Calendar;
 import java.util.Locale;
-public class AddEditItemActivity extends AppCompatActivity{
+
+public class AddEditItemActivity extends AppCompatActivity {
+
+    // Key used to pass the item's id from the Pantry List through the Intent
+    public static final String EXTRA_ITEM_ID = "item_id";
 
     private static final String[] UNITS = {"g", "kg", "ml", "l", "tsp", "tbsp", "cup", "piece"};
 
@@ -28,6 +34,8 @@ public class AddEditItemActivity extends AppCompatActivity{
     private Spinner spinnerUnit;
     private Button buttonSave, buttonDelete, buttonClearDate;
     private DatabaseHelper dbHelper;
+
+    private long itemId = -1; // -1 means "adding a new item"
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +61,41 @@ public class AddEditItemActivity extends AppCompatActivity{
         editExpiry.setOnClickListener(v -> showDatePicker());
         buttonClearDate.setOnClickListener(v -> editExpiry.setText(""));
         buttonSave.setOnClickListener(v -> saveItem());
+        buttonDelete.setOnClickListener(v -> confirmDelete());
+
+        // If the Pantry List sent an item id, this screen is in edit mode
+        itemId = getIntent().getLongExtra(EXTRA_ITEM_ID, -1);
+        if (itemId != -1) {
+            loadItem();
+        }
+    }
+
+    // Fills the form with the existing item's values (edit mode)
+    private void loadItem() {
+        PantryItem item = dbHelper.getPantryItem(itemId);
+        if (item == null) {
+            finish();
+            return;
+        }
+
+        textScreenTitle.setText("Edit ingredient");
+        buttonDelete.setVisibility(View.VISIBLE);
+
+        editName.setText(item.getName());
+
+        // Show 500 instead of 500.0 for whole numbers
+        double qty = item.getQuantity();
+        editQuantity.setText(qty == Math.floor(qty)
+                ? String.valueOf((long) qty) : String.valueOf(qty));
+
+        editExpiry.setText(item.getExpiryDate() == null ? "" : item.getExpiryDate());
+
+        for (int i = 0; i < UNITS.length; i++) {
+            if (UNITS[i].equals(item.getUnit())) {
+                spinnerUnit.setSelection(i);
+                break;
+            }
+        }
     }
 
     private void showDatePicker() {
@@ -108,15 +151,40 @@ public class AddEditItemActivity extends AppCompatActivity{
             expiry = null;
         }
 
-        PantryItem item = new PantryItem(0, name, quantity, unit, expiry);
-        long result = dbHelper.addPantryItem(item);
-
-        if (result == -1) {
-            Toast.makeText(this, "Could not save ingredient", Toast.LENGTH_SHORT).show();
+        boolean success;
+        if (itemId == -1) {
+            // CREATE
+            success = dbHelper.addPantryItem(
+                    new PantryItem(0, name, quantity, unit, expiry)) != -1;
         } else {
+            // UPDATE
+            success = dbHelper.updatePantryItem(
+                    new PantryItem(itemId, name, quantity, unit, expiry)) > 0;
+        }
+
+        if (success) {
             Toast.makeText(this, "Ingredient saved", Toast.LENGTH_SHORT).show();
             finish(); // returns to the Pantry List, whose onResume refreshes the list
+        } else {
+            Toast.makeText(this, "Could not save ingredient", Toast.LENGTH_SHORT).show();
         }
     }
+
+    // DELETE, after the user confirms in a dialog
+    private void confirmDelete() {
+        new AlertDialog.Builder(this)
+                .setTitle("Delete ingredient")
+                .setMessage("Are you sure you want to delete this ingredient?")
+                .setPositiveButton("Delete", (dialog, which) -> {
+                    dbHelper.deletePantryItem(itemId);
+                    Toast.makeText(this, "Ingredient deleted", Toast.LENGTH_SHORT).show();
+                    finish();
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
 }
+
+
 
