@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.smartpantrymanager.R;
 import com.example.smartpantrymanager.adapter.PantryAdapter;
 import com.example.smartpantrymanager.database.DatabaseHelper;
+import com.example.smartpantrymanager.database.RecipeSeeder;
 import com.example.smartpantrymanager.model.PantryItem;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -36,6 +37,8 @@ public class PantryListActivity extends AppCompatActivity {
         fabAddItem = findViewById(R.id.fabAddItem);
 
         databaseHelper = new DatabaseHelper(this);
+        RecipeSeeder.seedIfEmpty(databaseHelper);
+        android.util.Log.d("SEED_TEST", "Recipe count = " + databaseHelper.getRecipeCount());
 
         // Tapping a row opens the same form in edit mode, passing the item's id
         adapter = new PantryAdapter(new ArrayList<>(), item -> {

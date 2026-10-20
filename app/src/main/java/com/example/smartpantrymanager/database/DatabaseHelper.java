@@ -12,6 +12,7 @@ import com.example.smartpantrymanager.model.RecipeIngredient;
 
 import java.util.ArrayList;
 import java.util.List;
+
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DB_NAME = "smart_pantry.db";
     private static final int DB_VERSION = 1;
@@ -77,6 +78,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_PANTRY);
         onCreate(db);
     }
+
+    // ---------- PANTRY ----------
+
     // CREATE
     public long addPantryItem(PantryItem item) {
         SQLiteDatabase db = getWritableDatabase();
@@ -142,7 +146,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 cursor.getString(cursor.getColumnIndexOrThrow(COL_EXPIRY)));
     }
 
-    // ------- RECIPES -------
+    // ---------- RECIPES ----------
 
     // Inserts a recipe and all its ingredients in one transaction
     public void addRecipe(String name, String steps, List<RecipeIngredient> ingredients) {
@@ -154,7 +158,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             rv.put(COL_RECIPE_STEPS, steps);
             long recipeId = db.insert(TABLE_RECIPES, null, rv);
 
-            for (RecipeIngredient ing : ingredients){
+            for (RecipeIngredient ing : ingredients) {
                 ContentValues iv = new ContentValues();
                 iv.put(COL_RECIPE_ID, recipeId);
                 iv.put(COL_ING_NAME, ing.getName());
@@ -168,19 +172,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
+    // Removes all recipes (ingredients are deleted by ON DELETE CASCADE)
+    public void clearRecipes() {
+        SQLiteDatabase db = getWritableDatabase();
+        db.delete(TABLE_RECIPES, null, null);
+    }
+
     public int getRecipeCount() {
         SQLiteDatabase db = getReadableDatabase();
-        Cursor c = db.rawQuery("SELECT COUNT(*) FROM" + TABLE_RECIPES, null);
+        Cursor c = db.rawQuery("SELECT COUNT(*) FROM " + TABLE_RECIPES, null);
         int count = 0;
-        if (c.moveToFirst()){
+        if (c.moveToFirst()) {
             count = c.getInt(0);
         }
         c.close();
         return count;
     }
 
-    //Loads every recipe together with its ingredients
-    public List<Recipe> getAllRecipes(){
+    // Loads every recipe together with its ingredients
+    public List<Recipe> getAllRecipes() {
         List<Recipe> recipes = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
         Cursor c = db.query(TABLE_RECIPES, null, null, null, null, null,
