@@ -75,8 +75,5 @@ public class PantryListActivity extends AppCompatActivity {
             textEmptyPantry.setVisibility(View.GONE);
             recyclerPantry.setVisibility(View.VISIBLE);
         }
-        // TEMPORARY TEST - delete these two lines after checking Logcat
-        List<Recipe> all = databaseHelper.getAllRecipes();
-        android.util.Log.d("MATCH_TEST", "Can make: " + RecipeMatcher.getStrictMatches(all, items).size());
     }
 }
