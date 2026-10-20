@@ -14,6 +14,8 @@ import com.example.smartpantrymanager.adapter.PantryAdapter;
 import com.example.smartpantrymanager.database.DatabaseHelper;
 import com.example.smartpantrymanager.database.RecipeSeeder;
 import com.example.smartpantrymanager.model.PantryItem;
+import com.example.smartpantrymanager.model.Recipe;
+import com.example.smartpantrymanager.util.RecipeMatcher;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -73,5 +75,8 @@ public class PantryListActivity extends AppCompatActivity {
             textEmptyPantry.setVisibility(View.GONE);
             recyclerPantry.setVisibility(View.VISIBLE);
         }
+        // TEMPORARY TEST - delete these two lines after checking Logcat
+        List<Recipe> all = databaseHelper.getAllRecipes();
+        android.util.Log.d("MATCH_TEST", "Can make: " + RecipeMatcher.getStrictMatches(all, items).size());
     }
 }
