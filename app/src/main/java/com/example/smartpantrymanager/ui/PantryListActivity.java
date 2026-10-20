@@ -38,7 +38,6 @@ public class PantryListActivity extends AppCompatActivity {
 
         databaseHelper = new DatabaseHelper(this);
         RecipeSeeder.seedIfEmpty(databaseHelper);
-        android.util.Log.d("SEED_TEST", "Recipe count = " + databaseHelper.getRecipeCount());
 
         // Tapping a row opens the same form in edit mode, passing the item's id
         adapter = new PantryAdapter(new ArrayList<>(), item -> {
