@@ -14,13 +14,14 @@ import com.example.smartpantrymanager.adapter.PantryAdapter;
 import com.example.smartpantrymanager.database.DatabaseHelper;
 import com.example.smartpantrymanager.database.RecipeSeeder;
 import com.example.smartpantrymanager.model.PantryItem;
-import com.example.smartpantrymanager.model.Recipe;
-import com.example.smartpantrymanager.util.RecipeMatcher;
+import com.example.smartpantrymanager.util.NavigationHelper;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.List;
 
+/** Home screen: lists every pantry item stored in the SQLite database. */
 public class PantryListActivity extends AppCompatActivity {
 
     private RecyclerView recyclerPantry;
@@ -33,13 +34,14 @@ public class PantryListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pantry_list);
+        setTitle("My Pantry");
 
         recyclerPantry = findViewById(R.id.recyclerPantry);
         textEmptyPantry = findViewById(R.id.textEmptyPantry);
         fabAddItem = findViewById(R.id.fabAddItem);
 
         databaseHelper = new DatabaseHelper(this);
-        RecipeSeeder.seedIfEmpty(databaseHelper);
+        RecipeSeeder.seedIfEmpty(databaseHelper); // loads the 20 recipes on first run
 
         // Tapping a row opens the same form in edit mode, passing the item's id
         adapter = new PantryAdapter(new ArrayList<>(), item -> {
@@ -54,13 +56,21 @@ public class PantryListActivity extends AppCompatActivity {
         // Opens the Add Ingredient screen when + is tapped
         fabAddItem.setOnClickListener(v ->
                 startActivity(new Intent(PantryListActivity.this, AddEditItemActivity.class)));
+
+        BottomNavigationView nav = findViewById(R.id.bottomNav);
+        NavigationHelper.setup(this, nav, R.id.nav_pantry);
     }
 
-    // Runs every time the screen becomes visible, so the list is refreshed
-    // after returning from the Add/Edit screen
+    // Runs every time the screen becomes visible, so the list and the
+    // Settings choice are refreshed after returning from another screen
     @Override
     protected void onResume() {
         super.onResume();
+
+        boolean highlight = getSharedPreferences(SettingsActivity.PREFS_NAME, MODE_PRIVATE)
+                .getBoolean(SettingsActivity.KEY_HIGHLIGHT_EXPIRING, true);
+        adapter.setHighlightExpiring(highlight);
+
         loadPantry();
     }
 
