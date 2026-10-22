@@ -1,5 +1,6 @@
 package com.example.smartpantrymanager.model;
 
+/** One ingredient line a recipe requires (a row in recipe_ingredients). */
 public class RecipeIngredient {
     private String name;
     private double quantity;

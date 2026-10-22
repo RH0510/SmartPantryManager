@@ -2,6 +2,8 @@ package com.example.smartpantrymanager.model;
 
 import java.util.ArrayList;
 import java.util.List;
+
+/** A recipe with its method and the list of ingredients it needs. */
 public class Recipe {
     private long id;
     private String name;

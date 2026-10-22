@@ -1,5 +1,6 @@
 package com.example.smartpantrymanager.model;
 
+/** One ingredient the user currently has at home (a row in the pantry_items table). */
 public class PantryItem {
     private long id;
     private String name;

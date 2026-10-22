@@ -26,12 +26,13 @@ public class SettingsActivity extends AppCompatActivity{
         switchExpiring.setChecked(prefs.getBoolean(KEY_HIGHLIGHT_EXPIRING, true));
 
         //Save the choice immediately whenever the switch is toggled
-        //        switchExpiring.setOnCheckedChangeListener((button, isChecked) ->
-        //                prefs.edit().putBoolean(KEY_HIGHLIGHT_EXPIRING, isChecked).apply());
-        //
-        //        BottomNavigationView nav = findViewById(R.id.bottomNav);
-        //        NavigationHelper.setup(this, nav, R.id.nav_settings);
-        //
+                switchExpiring.setOnCheckedChangeListener((button, isChecked) ->
+                        prefs.edit().putBoolean(KEY_HIGHLIGHT_EXPIRING, isChecked).apply());
+
+                BottomNavigationView nav = findViewById(R.id.bottomNav);
+                NavigationHelper.setup(this, nav, R.id.nav_settings);
+
+
         }
     }
 

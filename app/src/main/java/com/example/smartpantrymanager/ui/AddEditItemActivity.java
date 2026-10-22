@@ -21,6 +21,11 @@ import com.google.android.material.textfield.TextInputLayout;
 import java.util.Calendar;
 import java.util.Locale;
 
+/**
+ * One form used for both adding and editing a pantry item.
+ * If an item id arrives in the Intent the screen runs in edit mode (with Delete).
+ */
+
 public class AddEditItemActivity extends AppCompatActivity {
 
     // Key used to pass the item's id from the Pantry List through the Intent

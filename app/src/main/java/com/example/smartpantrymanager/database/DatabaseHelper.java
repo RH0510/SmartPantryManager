@@ -13,6 +13,10 @@ import com.example.smartpantrymanager.model.RecipeIngredient;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Creates the SQLite database and provides all CRUD operations.
+ * Tables: pantry_items, recipes, recipe_ingredients (child of recipes, ON DELETE CASCADE).
+ */
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DB_NAME = "smart_pantry.db";
     private static final int DB_VERSION = 1;

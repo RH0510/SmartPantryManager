@@ -5,6 +5,7 @@ import com.example.smartpantrymanager.model.RecipeIngredient;
 import java.util.ArrayList;
 import java.util.List;
 
+/** Loads the 20 starter recipes into the database on first run. */
 public class RecipeSeeder {
 
     // Seeds the 20 starter recipes. If a previous run left a partial set, it is wiped first.
